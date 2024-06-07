@@ -7,7 +7,11 @@ import 'package:flutter_template/core/storage/shared_prefs_impl.dart';
 import 'package:flutter_template/core/storage/storage_client.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../core/api/client/api_client.dart';
+import '../../core/api/client/dio_api_client.dart';
 import '../../core/utils/observers.dart';
+import '../../features/auth/data/datasource/auth_datasource.dart';
+import '../../features/auth/data/repository/auth_repository.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -33,6 +37,9 @@ class DependencyContainer {
 
   static void initialize() {
     initializeLocalDataSources();
+    initializeAPIClient();
+    initializeRemoteDataSources();
+    initializeRepository();
   }
 
   static void initializeLocalDataSources() {
@@ -42,8 +49,28 @@ class DependencyContainer {
     instanceLocator.registerLazySingleton<LocalStorage>(
       () => LocalStoragImpl(
         storageClient: instanceLocator.get<StorageClient>(),
-        databaseStorage: instanceLocator.get<DatabaseStorage>(), // ** This line will throw an error since no database impl as been created
+        databaseStorage: instanceLocator.get<
+            DatabaseStorage>(), // ** This line will throw an error since no database impl as been created
       ),
     );
+  }
+
+  static void initializeAPIClient() {
+    instanceLocator.registerLazySingleton<ApiClient>(() => DioApiClient());
+  }
+
+  static void initializeRemoteDataSources() {
+    instanceLocator.registerLazySingleton<RemoteDataSource>(
+      () => AuthRemoteDataSource(client: instanceLocator()),
+    );
+  }
+
+  static void initializeRepository() {
+    instanceLocator.registerLazySingleton<AuthRemoteRepository>(
+      () => AuthRepository(authRemoteDataSource: instanceLocator()),
+    );
+  }
+  static void initializeBloc(){
+    
   }
 }
