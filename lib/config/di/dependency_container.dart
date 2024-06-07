@@ -10,6 +10,7 @@ import 'package:get_it/get_it.dart';
 import '../../core/api/client/api_client.dart';
 import '../../core/api/client/dio_api_client.dart';
 import '../../core/utils/observers.dart';
+import '../../features/auth/bloc/auth_bloc.dart';
 import '../../features/auth/data/datasource/auth_datasource.dart';
 import '../../features/auth/data/repository/auth_repository.dart';
 
@@ -70,7 +71,8 @@ class DependencyContainer {
       () => AuthRepository(authRemoteDataSource: instanceLocator()),
     );
   }
-  static void initializeBloc(){
-    
+
+  static void initializeBloc() {
+    instanceLocator.registerFactory<AuthBloc>(() => AuthBloc());
   }
 }
